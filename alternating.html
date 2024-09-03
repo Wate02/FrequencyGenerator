@@ -35,6 +35,13 @@
     <button id="playButton">Play</button>
     <button id="stopButton">Stop</button>
 
+  <div id="indicator">
+    <br>
+    Audio Playing</br><br>
+    <div id="beepin">beep*</div>
+    <div id="p2" class="mdl-progress mdl-js-progress mdl-progress__indeterminate"></div>
+
+  </div>
     <script>
         const audioContext = new (window.AudioContext || window.webkitAudioContext)();
         let oscillator;
@@ -48,9 +55,11 @@
             oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
             oscillator.connect(audioContext.destination);
             oscillator.start();
+            document.getElementById('beepin').style.display = 'block';
             setTimeout(() => {
                 oscillator.stop();
                 oscillator.disconnect();
+                document.getElementById('beepin').style.display = 'none';
             }, duration);
         }
 

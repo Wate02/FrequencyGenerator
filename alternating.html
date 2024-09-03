@@ -32,7 +32,7 @@
         -->
     </ul>
 
-    <h1>Frequenz Generator</h1>
+    <h1 id="alternatingh1">Frequenz Generator</h1>
     <input type="number" id="frequencyInput" placeholder=" (Hz)" min="20" max="20000">
     <input type="number" id="minPauseInput" placeholder="Min. Pause (ms)" min="0">
     <input type="number" id="maxPauseInput" placeholder="Max. Pause (ms)" min="0">
@@ -53,6 +53,9 @@
         let isPlaying = false;
         let playTimeout;
 
+        document.getElementById('stopButton').style.display = 'none';
+        
+        
         // Funktion zum Abspielen des Tons
         function playTone(frequency, duration) {
             oscillator = audioContext.createOscillator();
@@ -70,6 +73,8 @@
 
         // Play Button Event Listener
         document.getElementById('playButton').addEventListener('click', () => {
+            document.getElementById('playButton').style.display = 'none';
+            document.getElementById('stopButton').style.display = 'block';
             const frequency = parseFloat(document.getElementById('frequencyInput').value);
             const minPause = parseFloat(document.getElementById('minPauseInput').value);
             const maxPause = parseFloat(document.getElementById('maxPauseInput').value);
@@ -103,6 +108,8 @@
                 oscillator.disconnect();
                 oscillator = null;
             }
+            document.getElementById('playButton').style.display = 'block';
+            document.getElementById('stopButton').style.display = 'none';
         });
 
         // Funktion zum Starten der zufälligen Tonsequenz

@@ -30,8 +30,5 @@ document.getElementById('alternating').addEventListener('click', () => {
   location.href = 'alternating.html';
 })
 
-document.getElementById('default').addEventListener('click', () => {
-  location.href = 'index.html';
-})
 
 ;

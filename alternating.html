@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css">
+    <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+    <title>Frequenz Generator</title>
+
+</head>
+<body>
+    <!-- -MDL-->
+    <!-- Right aligned menu below button -->
+    <button id="demo-menu-lower-right" class="mdl-button mdl-js-button mdl-button--icon">
+        <i class="material-icons">more_vert</i>
+    </button>
+
+    <ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" for="demo-menu-lower-right">
+        <li class="mdl-menu__item" id="toggleBtn">Dark mode</li>
+        <li class="mdl-menu__item" id="default">Normal Mode</li>
+        <!--
+        <li disabled class="mdl-menu__item">Disabled Action</li>
+        <li class="mdl-menu__item">Secret mode</li>
+        -->
+    </ul>
+
+    <h1>Frequenz Generator</h1>
+    <input type="number" id="frequencyInput" placeholder=" (Hz)" min="20" max="20000">
+    <input type="number" id="minPauseInput" placeholder="Min. Pause (ms)" min="0">
+    <input type="number" id="maxPauseInput" placeholder="Max. Pause (ms)" min="0">
+    <input type="number" id="toneDurationInput" placeholder="Ton Dauer (ms)" min="1">
+    <button id="playButton">Play</button>
+    <button id="stopButton">Stop</button>
+
+    <script>
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        let oscillator;
+        let isPlaying = false;
+        let playTimeout;
+
+        // Funktion zum Abspielen des Tons
+        function playTone(frequency, duration) {
+            oscillator = audioContext.createOscillator();
+            oscillator.type = 'sine';
+            oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+            oscillator.connect(audioContext.destination);
+            oscillator.start();
+            setTimeout(() => {
+                oscillator.stop();
+                oscillator.disconnect();
+            }, duration);
+        }
+
+        // Play Button Event Listener
+        document.getElementById('playButton').addEventListener('click', () => {
+            const frequency = parseFloat(document.getElementById('frequencyInput').value);
+            const minPause = parseFloat(document.getElementById('minPauseInput').value);
+            const maxPause = parseFloat(document.getElementById('maxPauseInput').value);
+            const toneDuration = parseFloat(document.getElementById('toneDurationInput').value);
+
+            if (isNaN(frequency) || frequency < 20 || frequency > 20000) {
+                alert('Bitte geben Sie eine gültige Frequenz zwischen 20 Hz und 20.000 Hz ein.');
+                return;
+            }
+
+            if (isNaN(minPause) || isNaN(maxPause) || minPause < 0 || maxPause < 0 || minPause > maxPause) {
+                alert('Bitte geben Sie gültige Werte für das Pausenintervall ein.');
+                return;
+            }
+
+            if (isNaN(toneDuration) || toneDuration <= 0) {
+                alert('Bitte geben Sie eine gültige Dauer für den Ton ein.');
+                return;
+            }
+
+            isPlaying = true;
+            startRandomToneSequence(frequency, minPause, maxPause, toneDuration);
+        });
+
+        // Stop Button Event Listener
+        document.getElementById('stopButton').addEventListener('click', () => {
+            isPlaying = false;
+            clearTimeout(playTimeout);
+            if (oscillator) {
+                oscillator.stop();
+                oscillator.disconnect();
+                oscillator = null;
+            }
+        });
+
+        // Funktion zum Starten der zufälligen Tonsequenz
+        function startRandomToneSequence(frequency, minPause, maxPause, toneDuration) {
+            if (!isPlaying) return;
+
+            const randomPause = Math.random() * (maxPause - minPause) + minPause;
+            playTimeout = setTimeout(() => {
+                playTone(frequency, toneDuration);
+                startRandomToneSequence(frequency, minPause, maxPause, toneDuration);
+            }, randomPause);
+        }
+    </script>
+    <script src="alternating.js"></script>
+
+</body>
+</html>

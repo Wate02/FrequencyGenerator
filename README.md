@@ -1,2 +1,0 @@
-# FrequencyGenerator
-yes
